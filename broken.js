@@ -7,27 +7,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const commentsURL = `https://randopic.herokuapp.com/comments/`
   const container = document.querySelector(".container")
   container.addEventListener("click", handleClick)
-  const form = document.querySelector("form")
+  const form = document.getElementById("comment_form")
   form.addEventListener("submit", addComment)
-  const ul = document.querySelector("#comments")
+  const ul = document.getElementById("comments")
 
   function fetchImg() {
     fetch(imageURL)
     .then(resp=>resp.json())
     .then(image=> {
-      const img = document.getElementById("image")
-      img.src = `${image.url}`
-      img.dataset.id = `${image.id}`
-      const title = document.getElementById("name")
-      title.innerText = `${image.name}`
-      const likes = document.getElementById("likes")
-      likes.innerText = `${image.like_count}`
-      const ul = document.getElementById("comments")
-      image.comments.forEach(comment=> {
-        const liComment = `<li data-id=${comment.id}>${comment.content}</li>`
-        ul.innerHTML += liComment
+      const imageCard = `<div id="image_card" class="card col-md-4" data-id:"${image.id}">
+        <img src="${image.url}" id="image" data-id="${image.id}"/>
+        <h4 id="name">${image.name}</h4>
+        <span>Likes:
+          <span id="likes">${image.like_count}</span>
+        </span>
+        <button id="like_button">Like</button>
+        <form id="comment_form">
+          <input id="comment_input" type="text" name="comment" placeholder="Add Comment"/>
+          <input type="submit" value="Submit"/>
+        </form>
+        <ul id="comments"> ${image.comments.map(comment=> `<li data-id=${comment.id}> ${comment.content} </li>`).join("")} </ul>`
+      container.innerHTML = imageCard
       })
-    })
+    .catch(err => alert(err.message))
   }
 
   function handleClick(event) {
@@ -41,11 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault()
     const likeElement = event.target.previousElementSibling
     const likeNum = likeElement.innerText.split(" ")[1]
-    const likedImg = event.target.parentNode.firstElementChild.dataset.id
+    const likedImg = event.target.parentNode.dataset.id
+    console.log(event.target.parentNode)
     likeElement.innerHTML = `<span id="likes">Likes: ${parseInt(likeNum)+1}</span>`
 
     const formData = {
-      image_id: parseInt(likedImg)
+      image_id: likedImg 
     }
 
     const formObj = {
@@ -59,19 +62,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetch(likeURL, formObj)
     .then(resp=>resp.json())
-    .then(like=>like)
+    .then(like=>console.log(like))
 
   }
 
-  function addComment(event) {
+  function addComment(event){
     event.preventDefault()
-    const likedImg = event.target.parentNode.firstElementChild.dataset.id
-    const comment = event.target[0].value
-    ul.innerHTML += `<li>${comment}</li>`
+    console.log(event.target)
+    const imgId = event.target.parentNode.dataset.id
+    const commentContent = event.target[0].value
 
     const formData = {
-      image_id: parseInt(likedImg),
-      content: comment
+      image_id: imgId
+      content: commentContent
     }
 
     const formObj = {
@@ -87,11 +90,29 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(resp=> resp.json())
     .then(comment=>comment)
 
-    event.target.reset()
-
   }
 
 
 
   fetchImg()
 })
+
+
+
+    // const formData = {
+    //   image_id:
+    //   content:
+    // }
+
+    // const formObj = {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "Accept": "application/json"
+    //   },
+    //   body: JSON.stringify(formData)
+    // }
+
+    // fetch(commentsURL, formObj)
+    // .then(resp=> resp.json())
+    // .then(comment=>comment)
