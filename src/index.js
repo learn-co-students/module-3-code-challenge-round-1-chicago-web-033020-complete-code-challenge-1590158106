@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     name.innerHTML = json.name
     image.src = json.url
     likes.innerHTML = json.like_count
+    json.comments.forEach(comment => 
+      commentSection.innerHTML += `<li value=${comment.id}>${comment.content}<button class='delete-btn'>Delete</button></li>`
+      )
   })
 
   document.addEventListener("click", e => {
@@ -75,9 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetch(commentsURL, obj)
     .then(resp => resp.json())
-    .then(comment =>
-      commentSection.innerHTML += `<li value=${comment.id}>${myComment.value}<button class='delete-btn'>Delete</button></li>`
-    )
+    .then(comment => {
+        commentSection.innerHTML += `<li value=${comment.id}>${myComment.value}<button class='delete-btn'>Delete</button></li>`
+        myComment.value = ''
+      })
   })
 
 })
