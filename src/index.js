@@ -103,7 +103,10 @@ function increaseLikes(event){
 //   .then(resp => resp.json())
 //   .then(newComment => { getImage() })
 // }
-main();
+main()
 
 });
+
+
+//asfjaslfkjaosifjha
 
